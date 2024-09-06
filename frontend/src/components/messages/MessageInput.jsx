@@ -1,16 +1,30 @@
 import { useState } from "react";
 import { BsSend } from "react-icons/bs";
+import { FaPaperclip } from "react-icons/fa";
+
 import useSendMessage from "../../hooks/useSendMessage";
 
 const MessageInput = () => {
   const [message, setMessage] = useState("");
+  const [file, setFile] = useState(null);
+
   const { loading, sendMessage } = useSendMessage();
+
+  const handleFileChange = (e) => {
+    setFile(e.target.files[0]);
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!message) return;
-    await sendMessage(message);
+
+    if (!message && !file) return; // Prevent sending empty message and file
+
+    // Send both message and file using FormData if file exists
+    await sendMessage(message, file);
+
+    // Clear the input fields after sending
     setMessage("");
+    setFile(null); // Clear file input
   };
 
   return (
@@ -23,6 +37,17 @@ const MessageInput = () => {
           value={message}
           onChange={(e) => setMessage(e.target.value)}
         />
+        <div className="absolute inset-y-0 right-10 flex items-center px-3">
+          <input
+            type="file"
+            className="hidden"
+            id="file-input"
+            onChange={handleFileChange}
+          />
+          <label htmlFor="file-input" className="cursor-pointer">
+            <FaPaperclip />
+          </label>
+        </div>
         <button
           type="submit"
           className="absolute inset-y-0 end-0 flex items-center pe-3"

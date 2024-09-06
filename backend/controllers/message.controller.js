@@ -4,7 +4,7 @@ import Message from "../models/message.model.js";
 
 export const sendMessage = async (req, res) => {
   try {
-    const { message } = req.body;
+    const { message, image, file, fileType } = req.body; // Receive message, image, and file from the body
     const { id: receiverId } = req.params;
     const senderId = req.user._id;
 
@@ -21,22 +21,14 @@ export const sendMessage = async (req, res) => {
     const newMessage = new Message({
       senderId,
       receiverId,
-      message,
+      message, // Text message
+      image, // Image URL (if provided)
+      file, // File URL (if provided)
+      fileType, // File type (e.g., pdf, docx, etc.)
     });
 
-    if (newMessage) {
-      conversation.messages.push(newMessage._id);
-    }
-
-    //this will run in parallel
+    conversation.messages.push(newMessage._id);
     await Promise.all([conversation.save(), newMessage.save()]);
-
-    // SOCKET IO FUNCTIONALITY WILL GO HERE
-    // const receiverSocketId = getReceiverSocketId(receiverId);
-    // if (receiverSocketId) {
-    // 	// io.to(<socket_id>).emit() used to send events to specific client
-    // 	io.to(receiverSocketId).emit("newMessage", newMessage);
-    // }
 
     res.status(201).json(newMessage);
   } catch (error) {

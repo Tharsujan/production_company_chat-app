@@ -14,9 +14,20 @@ const messageSchema = new mongoose.Schema(
     },
     message: {
       type: String,
-      required: true,
+      default: "", // Set default to empty string
     },
-    // createdAt, updatedAt
+    image: {
+      type: String, // Image URL
+      default: null,
+    },
+    file: {
+      type: String, // File URL
+      default: null,
+    },
+    fileType: {
+      type: String, // File type like pdf, docx, etc.
+      default: null,
+    },
   },
   { timestamps: true }
 );
